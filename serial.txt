@@ -54,13 +54,10 @@ reg [7:0]adata,bdata;
 wire [7:0]pout;
 serial_adder s1(clk,rst,pload,adata,bdata,enable,pout);
 initial begin 
-clk=1'b0; 
-rst=1'b1; 
-pload=1'b0;
-#10 rst=1'b0; pload=1'b1;
-#5 adata=8'd1; bdata=8'd10;
-#5 pload=1'b0; enable=1'b1;
-#200
+clk=1'b0;rst=1'b1;pload=1'b0;enable=1'b0;
+#10 rst=1'b0; 
+#5 pload=1'b1;enable=1'b0;adata=8'd1; bdata=8'd2;
+#5 pload=1'b0; enable=1'b1;#200
 $stop; 
 end 
 always 
