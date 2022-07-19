@@ -1,0 +1,48 @@
+async_cntr.v:
+module asyn_cntr (clk, rst, count); 
+input clk, rst;
+output [3:0] count; 
+wire high;
+assign high = 1'b1;
+jkff u1 (clk, rst, high, high, count[0]);
+jkff u2 (count[0], rst, high, high, count[1]); 
+jkff u3 (count[1], rst, high, high, count[2]); 
+jkff u4 (count[2], rst, high, high, count[3]); 
+endmodule
+module jkff(clk, rst, j,k,q); 
+input j,k,clk,rst;
+output q; 
+reg q;
+always @(negedge clk or negedge rst) 
+begin
+if (!rst)
+q <= 1'b0;
+else 
+begin
+case ({j,k}) 
+2'b00 : q <= q;
+2'b01 : q <= 1'b0;
+2'b10 : q <= 1'b1;
+2'b11 : q <= ~q; 
+endcase
+end 
+end
+endmodule 
+
+
+
+async_cntr_tb.v: 
+module asyn_cntr_tb; 
+reg clk, rst;
+wire [3:0] count;
+asyn_cntr u1 (clk, rst, count); 
+initial begin
+clk = 1'b0;
+forever #1 clk = ~clk; 
+end
+initial begin 
+rst = 1'b0; #5 
+rst = 1'b1; #40
+$finish; 
+end 
+endmodule

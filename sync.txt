@@ -1,0 +1,34 @@
+sync_cntr.v:
+module syn_cntr (clk, rst, count); 
+input clk, rst;
+output [3:0] count;
+reg [3:0] count;
+always @(posedge clk) 
+begin
+if(!rst) /* considering active low reset */ 
+count <= 4'b000;
+else
+count <= count + 1; 
+end
+endmodule
+
+
+
+
+
+sync_cntr_tb.v:
+
+module syn_cntr_tb; 
+reg clk,rst;
+wire [3:0] count;
+syn_cntr u1 (clk, rst, count); 
+initial begin
+clk = 1'b0;
+forever #1 clk = ~clk; 
+end
+initial begin 
+rst = 1'b0; #5 
+rst = 1'b1; #40
+$finish; 
+end
+endmodule

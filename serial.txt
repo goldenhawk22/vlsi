@@ -1,0 +1,70 @@
+module serial_adder(clk,rst,pload,adata,bdata,enable,pout); 
+input clk,rst,pload,enable;
+input [7:0]adata,bdata;
+output [7:0]pout;
+reg shiftrega_lsb,shiftregb_lsb;
+reg [7:0]shiftrega,shiftregb,shiftregc; 
+wire sum,cout;
+reg holdc; 
+always@(posedge clk) 
+begin
+if(pload) 
+begin
+shiftrega=adata; 
+shiftregb=bdata; 
+shiftregc=8'b0;
+end
+else if(enable)
+begin
+shiftrega_lsb=shiftrega[0]; 
+shiftrega=shiftrega>>1; 
+shiftrega[7]=shiftrega_lsb; 
+shiftregb_lsb=shiftregb[0]; 
+shiftregb=shiftregb>>1; 
+shiftregb[7]=shiftregb_lsb;
+end
+shiftregc=shiftregc>>1; 
+shiftregc[7]=sum;
+end
+assign pout=shiftregc;
+f1 s1(shiftrega[0], shiftregb[0],holdc,sum,cout); 
+always@(posedge clk,rst)
+begin 
+if(rst)
+holdc=1'b0; 
+else if(enable)
+holdc=cout;
+else
+holdc=holdc;
+end
+endmodule
+
+module f1(a,b,ci,s,co); 
+input a,b,ci;
+output s,co;  
+assign s = a^b^ci;
+assign co = (a&b)|(b&ci)|(ci&a); 
+endmodule
+
+
+
+module serial_adder_tb;
+reg clk,rst,pload,enable; 
+reg [7:0]adata,bdata; 
+wire [7:0]pout;
+serial_adder s1(clk,rst,pload,adata,bdata,enable,pout);
+initial begin 
+clk=1'b0; 
+rst=1'b1; 
+pload=1'b0;
+#10 rst=1'b0; pload=1'b1;
+#5 adata=8'd1; bdata=8'd10;
+#5 pload=1'b0; enable=1'b1;
+#200
+$stop; 
+end 
+always 
+begin
+#5 clk=~clk;
+end
+endmodule
