@@ -6,9 +6,16 @@ reg shiftrega_lsb,shiftregb_lsb;
 reg [7:0]shiftrega,shiftregb,shiftregc; 
 wire sum,cout;
 reg holdc; 
-always@(posedge clk) 
+always@(posedge clk or rst) 
 begin
-if(pload) 
+if(rst)
+begin
+shiftrega=8'd0;
+shiftregb=8'd0;
+shiftregc=8'd0;
+end
+
+else if(pload) 
 begin
 shiftrega=adata; 
 shiftregb=bdata; 
